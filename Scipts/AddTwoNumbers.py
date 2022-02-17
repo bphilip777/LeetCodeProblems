@@ -1,28 +1,34 @@
 class ListNode:
-    def __init__(self, val=0, next=None):
+    def __init__(self, val=0, nextNode=None):
         self.val = val
-        self.next = next
+        self.nextNode = nextNode
 
 def addTwoNumbers(l1:ListNode, l2:ListNode) -> ListNode:
-    vals1 = []
-    vals2 = []
-    while l1 is not None:
-        vals1.append(l1.val)
-        l1 = l1.next
-    while l2 is not None:
-        vals2.append(l2.val)
-        l2 = l2.next
-    # Shift to the correct value
-    vals1 = [val * 10**i for i, val in enumerate(vals1)]
-    vals2 = [val * 10**i for i, val in enumerate(vals2)]
-    # Reverse the arrays
-    vals1.reverse()
-    vals2.reverse()
-    # Add them all together
-    vals = [a for a in str(sum(vals1) + sum(vals2))]
-    vals.reverse()
-    l3 = convertListToListNode(vals)
-    return l3
+    rollover = False
+    head = ListNode
+    current = head
+    while l1 is not None or l2 is not None:
+        val = 0
+        if l1 is not None:
+            val += l1.val
+            l1 = l1.nextNode
+        if l2 is not None:
+            val += l2.val
+            l2 = l2.nextNode
+        if rollover: # Check if on the previous loop rollover was greater than 10
+            val += 1
+            rollover = False
+        if val > 9:
+            rollover = True
+            val %= 10
+        current.val = val
+        # Prepare for next loop
+        if l1 is not None or l2 is not None:
+            current.nextNode = ListNode(0)
+            current = current.nextNode
+        else:
+            break
+    return head
 
 def convertListToListNode(values:list[int]) -> ListNode:
     # Initialize head of list node
@@ -33,14 +39,13 @@ def convertListToListNode(values:list[int]) -> ListNode:
         else:
             prev = current
         current = ListNode(n)
-        prev.next = current
+        prev.nextNode = current
     return head
 
 def printListNode(ln:ListNode):
     while(ln != None):
         print(ln.val)
-        ln = ln.next
-
+        ln = ln.nextNode
 
 # Create your list nodes
 l1T = [2, 4, 3]
